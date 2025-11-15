@@ -2,7 +2,7 @@ addEventListener("fetch", e => e.respondWith(handle(e.request)));
 async function handle(req){
   if(req.method!=="POST")return new Response("POST /api/gemini {prompt}");
   const {prompt}=await req.json();
-  const key=GEMINI_API_KEY; // la guardarás en Variables de entorno de CF
+  const key=GEMINI_API_KEY; // Variables de entorno en CF
   const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`,{
     method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
