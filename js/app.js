@@ -2,6 +2,7 @@
 class SuperPWAApp {
     constructor() {
         this.currentTheme = 'auto';
+        this.themeMediaQuery = null; // Store media query listener for cleanup
         this.init();
     }
 
@@ -33,11 +34,15 @@ class SuperPWAApp {
         this.applyTheme(this.currentTheme);
         
         // Escuchar cambios de preferencia del sistema
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        this.themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleThemeChange = (e) => {
             if (this.currentTheme === 'auto') {
                 this.applyTheme('auto');
             }
-        });
+        };
+        this.themeMediaQuery.addEventListener('change', handleThemeChange);
+        // Store handler for potential cleanup
+        this.themeChangeHandler = handleThemeChange;
     }
 
     applyTheme(theme) {
@@ -230,38 +235,31 @@ class SuperPWAApp {
     showNotification(message, type = 'info') {
         // Crear notificación toast
         const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : 'var(--card-bg)'};
-            color: ${type === 'error' || type === 'success' ? 'white' : 'var(--text-color)'};
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            z-index: 10000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            max-width: 300px;
-            word-wrap: break-word;
-        `;
+        // Use CSS classes instead of inline styles for better performance
+        toast.className = `notification-toast notification-${type}`;
         toast.textContent = message;
 
         document.body.appendChild(toast);
 
         // Animación de entrada
-        setTimeout(() => toast.style.transform = 'translateX(0)', 100);
+        setTimeout(() => toast.classList.add('notification-show'), 100);
 
         // Auto-remover después de 4 segundos
         setTimeout(() => {
-            toast.style.transform = 'translateX(400px)';
+            toast.classList.remove('notification-show');
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
             }, 300);
         }, 4000);
+    }
+    
+    // Add cleanup method
+    destroy() {
+        if (this.themeMediaQuery && this.themeChangeHandler) {
+            this.themeMediaQuery.removeEventListener('change', this.themeChangeHandler);
+        }
     }
 }
 

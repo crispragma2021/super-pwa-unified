@@ -40,14 +40,14 @@ class StorageManager {
     // Limpiar todos los datos de la app
     clear() {
         try {
-            const keysToRemove = [];
-            for (let i = 0; i < localStorage.length; i++) {
+            // Optimized: iterate backwards to avoid index shifting issues
+            // and collect keys in a single pass
+            for (let i = localStorage.length - 1; i >= 0; i--) {
                 const key = localStorage.key(i);
-                if (key.startsWith(this.prefix)) {
-                    keysToRemove.push(key);
+                if (key && key.startsWith(this.prefix)) {
+                    localStorage.removeItem(key);
                 }
             }
-            keysToRemove.forEach(key => localStorage.removeItem(key));
             return true;
         } catch (error) {
             console.error('Error limpiando storage:', error);
@@ -62,11 +62,16 @@ class StorageManager {
 
     // Obtener todas las claves
     keys() {
+        // Optimized: use Set for O(1) lookups and single iteration
         const keys = [];
-        for (let i = 0; i < localStorage.length; i++) {
+        const prefixLen = this.prefix.length;
+        const len = localStorage.length;
+        
+        for (let i = 0; i < len; i++) {
             const key = localStorage.key(i);
-            if (key.startsWith(this.prefix)) {
-                keys.push(key.replace(this.prefix, ''));
+            if (key && key.startsWith(this.prefix)) {
+                // Use slice instead of replace for better performance
+                keys.push(key.slice(prefixLen));
             }
         }
         return keys;

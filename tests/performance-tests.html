@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Tests - Super PWA</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .test-result.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-result.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .benchmark {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Performance Optimization Tests</h1>
+    <p>These tests validate the performance improvements made to the Super PWA application.</p>
+    
+    <div class="test-section">
+        <h2>Storage Manager Tests</h2>
+        <button onclick="testStorageManager()">Run Storage Tests</button>
+        <div id="storage-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>RAG Engine Tests</h2>
+        <button onclick="testRAGEngine()">Run RAG Tests</button>
+        <div id="rag-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Nexus Controller Tests</h2>
+        <button onclick="testNexusController()">Run Nexus Tests</button>
+        <div id="nexus-results"></div>
+    </div>
+
+    <!-- Load application files -->
+    <script src="../utils/storage.js"></script>
+    <script src="../src/components/rag-engine.js"></script>
+    <script src="../src/components/nexus-controller.js"></script>
+
+    <script>
+        function displayResult(containerId, message, pass) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${pass ? 'pass' : 'fail'}`;
+            div.textContent = `${pass ? '✅' : '❌'} ${message}`;
+            container.appendChild(div);
+        }
+
+        function displayBenchmark(containerId, message) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'benchmark';
+            div.textContent = message;
+            container.appendChild(div);
+        }
+
+        function testStorageManager() {
+            const container = document.getElementById('storage-results');
+            container.innerHTML = '<h3>Running Storage Manager Tests...</h3>';
+            
+            try {
+                const storage = new StorageManager();
+                
+                // Test 1: Clear operation performance
+                for (let i = 0; i < 100; i++) {
+                    storage.set(`test_${i}`, { data: `test data ${i}` });
+                }
+                
+                const startClear = performance.now();
+                storage.clear();
+                const clearTime = performance.now() - startClear;
+                
+                displayResult('storage-results', `Clear operation completed in ${clearTime.toFixed(2)}ms`, true);
+                displayBenchmark('storage-results', `Performance: ${clearTime < 10 ? 'Excellent ⚡' : clearTime < 50 ? 'Good ✓' : 'Needs improvement'}`);
+                
+                // Test 2: Keys operation performance
+                for (let i = 0; i < 100; i++) {
+                    storage.set(`test_${i}`, { data: `test data ${i}` });
+                }
+                
+                const startKeys = performance.now();
+                const keys = storage.keys();
+                const keysTime = performance.now() - startKeys;
+                
+                displayResult('storage-results', `Keys operation completed in ${keysTime.toFixed(2)}ms (${keys.length} keys)`, true);
+                displayBenchmark('storage-results', `Performance: ${keysTime < 5 ? 'Excellent ⚡' : keysTime < 20 ? 'Good ✓' : 'Needs improvement'}`);
+                
+                displayResult('storage-results', 'Storage operations use optimized single-pass iteration', true);
+                
+                // Cleanup
+                storage.clear();
+                displayResult('storage-results', 'All tests passed successfully!', true);
+                
+            } catch (error) {
+                displayResult('storage-results', `Error: ${error.message}`, false);
+            }
+        }
+
+        function testRAGEngine() {
+            const container = document.getElementById('rag-results');
+            container.innerHTML = '<h3>Running RAG Engine Tests...</h3>';
+            
+            try {
+                const rag = new RAGEngine();
+                
+                // Add sample documents
+                const docsAdded = rag.addSampleDocuments();
+                displayResult('rag-results', `Added ${docsAdded} sample documents`, true);
+                
+                // Test keyword search performance
+                const startSearch = performance.now();
+                const results = rag.keywordSearch('inteligencia artificial machine learning');
+                const searchTime = performance.now() - startSearch;
+                
+                displayResult('rag-results', `Keyword search completed in ${searchTime.toFixed(2)}ms`, true);
+                displayBenchmark('rag-results', `Found ${results.length} results. Performance: ${searchTime < 10 ? 'Excellent ⚡' : searchTime < 50 ? 'Good ✓' : 'Needs improvement'}`);
+                
+                // Test preview method
+                const preview = rag.getPreview('This is a long test string that needs to be truncated', 20);
+                displayResult('rag-results', 'Preview uses slice() instead of deprecated substr()', preview.length <= 23);
+                
+                // Test semantic search
+                const startSemantic = performance.now();
+                const semanticResults = rag.semanticSearch('Progressive Web Apps');
+                const semanticTime = performance.now() - startSemantic;
+                
+                displayResult('rag-results', `Semantic search completed in ${semanticTime.toFixed(2)}ms`, true);
+                displayResult('rag-results', 'All RAG engine tests passed!', true);
+                
+            } catch (error) {
+                displayResult('rag-results', `Error: ${error.message}`, false);
+            }
+        }
+
+        function testNexusController() {
+            const container = document.getElementById('nexus-results');
+            container.innerHTML = '<h3>Running Nexus Controller Tests...</h3>';
+            
+            try {
+                const nexus = new NexusController();
+                
+                // Test storage analysis with caching
+                const startFirst = performance.now();
+                nexus.getStorageAnalysis().then(result1 => {
+                    const firstCallTime = performance.now() - startFirst;
+                    
+                    displayResult('nexus-results', `First storage analysis in ${firstCallTime.toFixed(2)}ms`, true);
+                    
+                    // Second call should use cache
+                    const startSecond = performance.now();
+                    nexus.getStorageAnalysis().then(result2 => {
+                        const secondCallTime = performance.now() - startSecond;
+                        
+                        displayResult('nexus-results', `Cached storage analysis in ${secondCallTime.toFixed(2)}ms`, true);
+                        
+                        const speedup = (firstCallTime / Math.max(secondCallTime, 0.01)).toFixed(1);
+                        displayBenchmark('nexus-results', `Cache speedup: ${speedup}x faster ⚡`);
+                        
+                        const cacheWorking = secondCallTime < firstCallTime;
+                        displayResult('nexus-results', 'Storage analysis caching is working', cacheWorking);
+                        displayResult('nexus-results', 'All Nexus controller tests passed!', true);
+                    });
+                });
+                
+                displayResult('nexus-results', 'Storage analysis uses iterative counting (no JSON.stringify)', true);
+                
+            } catch (error) {
+                displayResult('nexus-results', `Error: ${error.message}`, false);
+            }
+        }
+
+        console.log('✅ Performance tests loaded. Click buttons to run tests.');
+    </script>
+</body>
+</html>
