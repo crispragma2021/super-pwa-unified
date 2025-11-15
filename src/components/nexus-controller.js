@@ -2,6 +2,10 @@ class NexusController {
     constructor() {
         this.storage = new StorageManager();
         this.initialized = false;
+        // Add cache for expensive operations
+        this.storageAnalysisCache = null;
+        this.storageAnalysisCacheTime = 0;
+        this.CACHE_TTL = 30000; // 30 seconds cache TTL
     }
 
     async initialize() {
@@ -67,15 +71,37 @@ class NexusController {
     }
 
     async getStorageAnalysis() {
-        const used = JSON.stringify(localStorage).length;
+        // Check cache first to avoid expensive JSON.stringify
+        const now = Date.now();
+        if (this.storageAnalysisCache && (now - this.storageAnalysisCacheTime) < this.CACHE_TTL) {
+            return this.storageAnalysisCache;
+        }
+        
+        // Calculate storage size more efficiently
+        let used = 0;
+        const len = localStorage.length;
+        for (let i = 0; i < len; i++) {
+            const key = localStorage.key(i);
+            if (key) {
+                // Count key + value length instead of stringifying entire storage
+                used += key.length + (localStorage.getItem(key) || '').length;
+            }
+        }
+        
         const limit = 5 * 1024 * 1024; // 5MB típico
         const usage = Math.round((used / limit) * 100);
 
-        return {
+        const result = {
             used: Math.round(used / 1024) + ' KB',
             limit: Math.round(limit / 1024) + ' KB',
             usage: usage
         };
+        
+        // Cache the result
+        this.storageAnalysisCache = result;
+        this.storageAnalysisCacheTime = now;
+        
+        return result;
     }
 
     async getNetworkStatus() {

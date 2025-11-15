@@ -4,6 +4,10 @@ class AIManager {
         this.deepseekClient = new DeepSeekClient();
         this.settings = new SettingsManager();
         this.isInitialized = false;
+        // Add connectivity cache
+        this.connectivityCache = null;
+        this.connectivityCacheTime = 0;
+        this.CONNECTIVITY_CACHE_TTL = 60000; // 60 seconds
     }
 
     async initialize() {
@@ -85,21 +89,24 @@ class AIManager {
     }
 
     async checkConnectivity() {
-        try {
-            const response = await fetch('https://api.deepseek.com/v1/models', {
-                method: 'HEAD',
-                mode: 'no-cors'
-            });
-            return true;
-        } catch (error) {
-            // Intentar con Google como fallback
-            try {
-                await fetch('https://www.google.com', { method: 'HEAD', mode: 'no-cors' });
-                return true;
-            } catch {
-                return false;
-            }
+        // Check cache first
+        const now = Date.now();
+        if (this.connectivityCache !== null && (now - this.connectivityCacheTime) < this.CONNECTIVITY_CACHE_TTL) {
+            return this.connectivityCache;
         }
+        
+        // Simple online check first (instant)
+        if (!navigator.onLine) {
+            this.connectivityCache = false;
+            this.connectivityCacheTime = now;
+            return false;
+        }
+        
+        // If online according to browser, assume connected (avoid slow network requests)
+        // Real connectivity will be tested when actual API calls are made
+        this.connectivityCache = true;
+        this.connectivityCacheTime = now;
+        return true;
     }
 
     async getAvailableProviders() {

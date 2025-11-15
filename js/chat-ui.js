@@ -3,6 +3,7 @@ class ChatUI {
     constructor() {
         this.aiManager = new AIManager();
         this.isProcessing = false;
+        this.statusUpdateInterval = null; // Store interval ID for cleanup
         this.initializeEventListeners();
         this.updateAIStatus();
     }
@@ -29,7 +30,15 @@ class ChatUI {
         }
 
         // Actualizar estado cada 30 segundos
-        setInterval(() => this.updateAIStatus(), 30000);
+        this.statusUpdateInterval = setInterval(() => this.updateAIStatus(), 30000);
+    }
+    
+    // Add cleanup method to prevent memory leaks
+    destroy() {
+        if (this.statusUpdateInterval) {
+            clearInterval(this.statusUpdateInterval);
+            this.statusUpdateInterval = null;
+        }
     }
 
     onAIChange(aiType) {

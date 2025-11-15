@@ -81,19 +81,25 @@ class RAGEngine {
     keywordSearch(query) {
         const queryTerms = this.tokenize(query.toLowerCase());
         const results = [];
+        
+        // Pre-compile regex patterns outside the loop for better performance
+        const regexPatterns = queryTerms.map(term => ({
+            term,
+            regex: new RegExp(term, 'g')
+        }));
 
         this.documents.forEach((doc, id) => {
             let score = 0;
             const matches = [];
 
-            queryTerms.forEach(term => {
+            regexPatterns.forEach(({ term, regex }) => {
                 if (doc.tokens.includes(term)) {
                     score += 0.5;
                     matches.push(term);
                 }
 
                 // Buscar en contenido también
-                const contentMatches = (doc.content.toLowerCase().match(new RegExp(term, 'g')) || []).length;
+                const contentMatches = (doc.content.toLowerCase().match(regex) || []).length;
                 score += contentMatches * 0.1;
             });
 
@@ -260,7 +266,8 @@ class RAGEngine {
     getPreview(content, maxLength) {
         if (content.length <= maxLength) return content;
         
-        return content.substr(0, maxLength) + '...';
+        // Use slice instead of deprecated substr
+        return content.slice(0, maxLength) + '...';
     }
 
     // Método para agregar documentos de ejemplo
