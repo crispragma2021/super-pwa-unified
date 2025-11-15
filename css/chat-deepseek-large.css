@@ -1,0 +1,320 @@
+/* Estilos DeepSeek - Pantalla Grande Completa */
+:root {
+    --deepseek-primary: #2563eb;
+    --deepseek-bg: #ffffff;
+    --deepseek-card: #f8fafc;
+    --deepseek-text: #1e293b;
+    --deepseek-border: #e2e8f0;
+}
+
+[data-theme="dark"] {
+    --deepseek-primary: #3b82f6;
+    --deepseek-bg: #0f172a;
+    --deepseek-card: #1e293b;
+    --deepseek-text: #f1f5f9;
+    --deepseek-border: #334155;
+}
+
+/* Contenedor principal estilo DeepSeek */
+.app-container {
+    min-height: 100vh;
+    background: var(--deepseek-bg);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Header minimalista como DeepSeek */
+.app-header {
+    background: var(--deepseek-bg);
+    border-bottom: 1px solid var(--deepseek-border);
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.app-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--deepseek-primary);
+    margin: 0;
+}
+
+.app-subtitle {
+    font-size: 0.9rem;
+    color: var(--deepseek-text);
+    opacity: 0.7;
+    margin: 0;
+}
+
+/* Layout principal - Chat ocupa toda la pantalla */
+.main-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: calc(100vh - 80px);
+    gap: 0;
+}
+
+/* Panel lateral (selector de AI) */
+.ai-selector-section {
+    background: var(--deepseek-card);
+    border-right: 1px solid var(--deepseek-border);
+    border-radius: 0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Sección de chat - OCUPA TODO EL ESPACIO */
+.chat-section {
+    background: var(--deepseek-bg);
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chat-section h2 {
+    display: none; /* Ocultar título del chat */
+}
+
+/* Contenedor del chat - MÁXIMO tamaño */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100% !important;
+    max-height: none !important;
+    background: var(--deepseek-bg);
+    border: none;
+    border-radius: 0;
+}
+
+/* Área de mensajes - OCUPA MÁXIMO ESPACIO */
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+}
+
+/* Mensajes más grandes estilo DeepSeek */
+.message {
+    display: flex;
+    max-width: 90%;
+    animation: messageAppear 0.3s ease;
+}
+
+.user-message {
+    align-self: flex-end;
+}
+
+.assistant-message {
+    align-self: flex-start;
+}
+
+.message-content {
+    padding: 16px 20px;
+    border-radius: 18px;
+    max-width: 100%;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+.user-message .message-content {
+    background: var(--deepseek-primary);
+    color: white;
+    border-bottom-right-radius: 6px;
+}
+
+.assistant-message .message-content {
+    background: var(--deepseek-card);
+    border: 1px solid var(--deepseek-border);
+    border-bottom-left-radius: 6px;
+}
+
+.message-text {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.message-time {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-top: 8px;
+}
+
+/* Input area estilo DeepSeek */
+.chat-input-container {
+    background: var(--deepseek-bg);
+    border-top: 1px solid var(--deepseek-border);
+    padding: 20px;
+    margin-top: auto;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.message-input {
+    flex: 1;
+    padding: 16px 20px;
+    border: 2px solid var(--deepseek-border);
+    border-radius: 24px;
+    background: var(--deepseek-card);
+    color: var(--deepseek-text);
+    font-size: 16px;
+    resize: none;
+    min-height: 56px;
+    max-height: 200px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.message-input:focus {
+    outline: none;
+    border-color: var(--deepseek-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--deepseek-primary) 20%, transparent);
+}
+
+.send-button {
+    background: var(--deepseek-primary);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 16px 28px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-height: 56px;
+    min-width: 100px;
+}
+
+.send-button:hover {
+    background: color-mix(in srgb, var(--deepseek-primary) 90%, black);
+    transform: translateY(-1px);
+}
+
+/* Controles del chat */
+.chat-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 15px auto 0;
+}
+
+.control-button {
+    padding: 10px 16px;
+    border: 1px solid var(--deepseek-border);
+    border-radius: 16px;
+    background: var(--deepseek-card);
+    color: var(--deepseek-text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-button:hover {
+    background: var(--deepseek-border);
+}
+
+/* Scrollbar estilo moderno */
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: var(--deepseek-border);
+    border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--deepseek-primary);
+}
+
+/* Animaciones */
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Typing indicator mejorado */
+.typing-dots span {
+    width: 10px;
+    height: 10px;
+    background: var(--deepseek-primary);
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        height: calc(100vh - 60px);
+    }
+    
+    .ai-selector-section {
+        display: none; /* Ocultar panel lateral en móviles */
+    }
+    
+    .message {
+        max-width: 95%;
+    }
+    
+    .chat-input-row {
+        flex-direction: column;
+    }
+    
+    .send-button {
+        width: 100%;
+        border-radius: 16px;
+    }
+    
+    .message-input {
+        border-radius: 16px;
+    }
+}
+
+/* Efectos de profundidad */
+.chat-messages {
+    background: 
+        radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--deepseek-primary) 2%, transparent) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--deepseek-primary) 2%, transparent) 0%, transparent 50%);
+}
+
+/* Mejora para mensajes de código */
+.message-text pre {
+    background: var(--deepseek-bg);
+    border: 1px solid var(--deepseek-border);
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.message-text code {
+    background: var(--deepseek-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--deepseek-border);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}

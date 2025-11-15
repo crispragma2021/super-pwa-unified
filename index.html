@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super PWA AI - Chat Grande</title>
+    <meta name="theme-color" content="#2563eb">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="css/chat-styles-combined.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body class="deepseek-style">
+    <div class="app-container">
+        <!-- Header minimalista -->
+        <header class="app-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <h1 class="app-title">🤖 Super AI</h1>
+                    <p class="app-subtitle">Chat con IA - Pantalla Completa</p>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="aiSelector" class="ai-selector" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 12px; color: var(--text-color);">
+                        <option value="nexus">Nexus AI</option>
+                        <option value="deepseek">DeepSeek AI</option>
+                        <option value="gemini">Gemini AI</option>
+                    </select>
+                    <button id="themeToggle" class="theme-btn">🌙</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Layout principal -->
+        <main class="main-content">
+            <!-- Panel lateral -->
+            <aside class="card ai-selector-section" style="margin: 0; border-radius: 0; border-right: 1px solid var(--border-color); height: 100%; overflow-y: auto;">
+                <h3>🎯 Configuración AI</h3>
+                <div class="form-group">
+                    <label for="apiKey">🔑 API Key:</label>
+                    <input type="password" id="apiKey" class="api-key-input" placeholder="Opcional para Nexus AI">
+                    <div id="apiStatus" class="api-status"></div>
+                </div>
+                
+                <div class="ai-info-container">
+                    <div id="nexusInfo" class="ai-info-card active">
+                        <h4>🤖 Nexus AI</h4>
+                        <p><strong>Local - Sin API</strong></p>
+                        <p style="font-size: 14px; opacity: 0.8;">Funciona inmediatamente sin configuración.</p>
+                    </div>
+                    <div id="deepseekInfo" class="ai-info-card">
+                        <h4>🚀 DeepSeek AI</h4>
+                        <p><strong>Requiere API Key</strong></p>
+                        <p style="font-size: 14px; opacity: 0.8;">Usa tu API Key de DeepSeek.</p>
+                    </div>
+                    <div id="geminiInfo" class="ai-info-card">
+                        <h4>⭐ Gemini AI</h4>
+                        <p><strong>Modo Simulación</strong></p>
+                        <p style="font-size: 14px; opacity: 0.8;">Backend local en desarrollo.</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border-color);">
+                    <h4>💡 Estado del Sistema</h4>
+                    <div id="aiStatus" style="font-size: 14px; margin: 10px 0; padding: 8px; border-radius: 8px; background: #10b98120; color: #10b981;">
+                        🟢 Nexus AI - Listo
+                    </div>
+                    <p style="font-size: 14px; opacity: 0.8;">El sistema cambia automáticamente si hay errores.</p>
+                </div>
+            </aside>
+
+            <!-- Área principal de chat - PANTALLA COMPLETA -->
+            <section class="chat-section" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
+                <div class="chat-container" style="height: 100% !important; max-height: none !important; border: none; border-radius: 0;">
+                    <div id="chatMessages" class="chat-messages" style="flex: 1; min-height: 0;">
+                        <div class="message assistant-message">
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <strong>¡Chat de Pantalla Completa Activado! 🚀</strong><br><br>
+                                    • Interfaz estilo <strong>DeepSeek</strong><br>
+                                    • Área de chat <strong>maximizada</strong><br>
+                                    • Diseño <strong>moderno y limpio</strong><br>
+                                    • <strong>Responsive</strong> para todos los dispositivos<br><br>
+                                    ¡Escribe tu primer mensaje!
+                                </div>
+                                <div class="message-time" id="currentTime"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container" style="border-top: 1px solid var(--border-color); padding: 20px; background: var(--card-bg);">
+                        <div class="chat-input-row">
+                            <textarea id="messageInput" class="message-input" 
+                                      placeholder="Escribe tu mensaje aquí..." rows="3" style="border-radius: 20px; padding: 16px 20px; font-size: 16px; min-height: 60px;"></textarea>
+                            <button id="sendButton" class="send-button" style="border-radius: 20px; padding: 16px 24px; font-size: 16px; min-height: 60px;">Enviar</button>
+                        </div>
+                        <div class="chat-controls">
+                            <button id="clearChat" class="control-button">🧹 Limpiar Chat</button>
+                            <button id="exportChat" class="control-button">📤 Exportar</button>
+                            <button id="settingsBtn" class="control-button">⚙️ Configuración</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Configuración</h3>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="themeSelect">🎨 Tema:</label>
+                    <select id="themeSelect" class="setting-select">
+                        <option value="auto">Auto</option>
+                        <option value="light">Claro</option>
+                        <option value="dark">Oscuro</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="historySize">💾 Historial:</label>
+                    <select id="historySize" class="setting-select">
+                        <option value="25">25 mensajes</option>
+                        <option value="50">50 mensajes</option>
+                        <option value="100">100 mensajes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveSettings" class="btn-primary">💾 Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config/api-config.js"></script>
+    <script src="js/deepseek-handler.js"></script>
+    <script src="js/gemini-handler.js"></script>
+    <script src="js/ai-manager.js"></script>
+    <script src="js/chat-ui.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        // Hora actual
+        document.getElementById('currentTime').textContent = new Date().toLocaleTimeString('es-ES', {
+            hour: '2-digit', minute: '2-digit'
+        });
+
+        // Inicialización simple del selector AI
+        document.getElementById('aiSelector').addEventListener('change', function(e) {
+            const aiType = e.target.value;
+            document.querySelectorAll('.ai-info-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(aiType + 'Info').classList.add('active');
+            
+            // Actualizar placeholder
+            const apiInput = document.getElementById('apiKey');
+            const placeholders = {
+                nexus: 'Opcional para Nexus AI',
+                deepseek: 'Ingresa API Key de DeepSeek (sk-...)',
+                gemini: 'Ingresa API Key de Google Gemini'
+            };
+            apiInput.placeholder = placeholders[aiType];
+        });
+    </script>
+</body>
+</html>
